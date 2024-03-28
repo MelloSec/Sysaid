@@ -1,3 +1,3 @@
 # Sysaid
 
-Collection of admin scripts to make your life easier.
+Collection of admin scripts to make my life easier.

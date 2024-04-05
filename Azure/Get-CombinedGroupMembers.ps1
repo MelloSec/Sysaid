@@ -1,3 +1,10 @@
+# Collects and exports all members of both Unified Groups and Distribution Groups to CSV Files for reporting
+
+# 1. House-Keeping Section
+# Define the module name, can change this for other Modules
+$moduleName = "ExchangeOnlineManagement"
+
+# Check if 'pwsh' is installed and on PATH, ifnot, print a help message with link to install
 try {
     $output = pwsh -Command "$PSVersionTable.PSVersion"
     if ($output) {
@@ -15,7 +22,7 @@ Once installed, you can launch PowerShell 7 using the 'pwsh' command.
     Write-Output $seven
 }
 
-# Check if the script is running in PowerShell 7 or higher
+# Enforce PowerShell 7 - Check if the script is running in PowerShell 7 or higher, throw a custom error and break back to the terminal
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Host "This script requires PowerShell 7+. Please install then use 'pwsh .\Get-CombinedGroupMembers.ps1'" -ForegroundColor Darkyellow
     throw "This script requires PowerShell 7 or higher. Please upgrade to continue."
@@ -23,33 +30,35 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Output "Running in PowerShell 7 or higher. Proceeding..."
 }
 
-# Define the module name
-$moduleName = "ExchangeOnlineManagement"
-
-# Check if the Exchange Online Management module is installed
+# Store all the modules imported in memory so we can search them and match on what we want to ensure is imported
 $module = Get-Module -Name $moduleName -ListAvailable
 
+# Check if the Exchange Online Management module is installed, attempt to unstall missing module. Customize the 'else' block if you re-use.
 if ($module) {
     # Module is installed, now check if it's imported
     if (-not (Get-Module -Name $moduleName)) {
-        Import-Module $moduleName
+        Import-Module $moduleName -Force
         Write-Host "$moduleName imported successfully."
     } else {
         Write-Host "$moduleName is already imported."
     }
 } else {
+    # Change This if you Change the Module
     # Module is not installed, provide instructions to install it
     Write-Host "$moduleName is not installed. Installing V3.4.0 or greater using 'Install-Module -Name ExchangeOnlineManagement -AllowClobber  -RequiredVersion 3.4.0'"
-    Install-Module -Name ExchangeOnlineManagement -AllowClobber  -RequiredVersion 3.4.0
+    Install-Module -Name ExchangeOnlineManagement -Force -AllowClobber  -RequiredVersion 3.4.0
 }
 
-# Authenticate - Requires PowerShell 7 Module
+# 2. Authentication/Device Code Login - Requires PowerShell 7 Module
 Write-Output "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions below to authenticate."
 Connect-ExchangeOnline -Device
 
+# 3. Logic for Building Reports
+# Store All Groups as a variable and create an empty array so we have somewhere to put all the group member objects
 $distributionGroups = Get-DistributionGroup
 $distributionGroupMembers = @()
 
+# DistributionGroups - Pull the name and address as a PSObject, a special data type we customize to have the properties we want and not all the data 
 foreach ($group in $distributionGroups) {
     Write-Output "Processing group: $($group.Name)"
     $members = Get-DistributionGroupMember -Identity $group.Identity | Select DisplayName, PrimarySmtpAddress
@@ -63,10 +72,11 @@ foreach ($group in $distributionGroups) {
     }
 }
 
+# Write the in-memory array of objects to our CSV file plainly
 $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
 Write-Output "Exported Distribution Group Members to Distribution-GroupMembership.csv"
 
-
+# UnifiedGroups - Do the exact same thing with different properties to match unified groups, note 'DisplayName' twice instead of 'Name'
 $unifiedGroups = Get-UnifiedGroup
 $unifiedGroupMembers = @()
 
@@ -86,6 +96,7 @@ foreach ($group in $unifiedGroups) {
 $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
 Write-Output "Exported Unified Group Members to Unified-GroupMembership.csv"
 
+Write-Output "Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'"
 
 
 

@@ -53,11 +53,13 @@ if ($module) {
 }
 
 # 2. Authentication/Device Code Login - Requires PowerShell 7 Module
+
 # This way works on headless systems, you verify your identity with a code in the browser on any other device that's signed in
 Write-Output "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions below to authenticate."
 Connect-ExchangeOnline -Device
 
 # 3. Main Logic / Building Reports
+
 # Store All Groups as a variable and create an empty array for our PowerShell CustomObject (everything is an object, so we can create our own type) so we have somewhere to put all the group member objects
 $distributionGroups = Get-DistributionGroup
 $distributionGroupMembers = @()
@@ -81,6 +83,7 @@ foreach ($group in $distributionGroups) {
 }
 
 # 4. Write the in-memory array of objects to our CSV file plainly
+
 # Creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
 $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
 Write-Host "Exported Distribution Group Members to Distribution-GroupMembership.csv" -ForegroundColor Darkyellow
@@ -106,6 +109,7 @@ $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInf
 Write-Host "Exported Unified Group Members to Unified-GroupMembership.csv" -ForegroundColor Darkyellow
 
 # 5. Close Session and Disconnect
+
 # If you use Write-Host instead of Output, you can specify different colors to customize your output on the terminal
 Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor DarkBlue
 Disconnect-ExchangeOnline -Confirm $true

@@ -2,7 +2,8 @@
 # Requires PowerShell 7+ (pwsh.exe) and ExchangeOnline V3+ (but it still beats the graph module)
 # From cmd.exe/powershell.exe terminal enter the scripts location and run 'pwsh .\Get-CombinedGroupMembers.ps1'  
 
-# 1. House-Keeping Section
+# 1. House-Keeping Section - Check for and Install Dependencies before we do anything else
+
 # Define the module name, can change this for other Modules
 $moduleName = "ExchangeOnlineManagement"
 

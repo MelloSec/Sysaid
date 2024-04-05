@@ -53,11 +53,12 @@ if ($module) {
 }
 
 # 2. Authentication/Device Code Login - Requires PowerShell 7 Module
+# This way works on headless systems, you verify your identity with a code in the browser on any other device that's signed in
 Write-Output "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions below to authenticate."
 Connect-ExchangeOnline -Device
 
 # 3. Logic for Building Reports
-# Store All Groups as a variable and create an empty array so we have somewhere to put all the group member objects
+# Store All Groups as a variable and create an empty array for our PowerShell CustomObject (everything is an object, so we can create our own type) so we have somewhere to put all the group member objects
 $distributionGroups = Get-DistributionGroup
 $distributionGroupMembers = @()
 
@@ -66,6 +67,9 @@ $distributionGroupMembers = @()
 foreach ($group in $distributionGroups) {
     Write-Output "Processing group: $($group.Name)"
     $members = Get-DistributionGroupMember -Identity $group.Identity | Select DisplayName, PrimarySmtpAddress
+    
+    # Loop through the members and append them with the desired properties only. 
+    # PSCUstomObjects are also a good way to speed up performance on processing 'big' objects via filtering out useless properties of one object and creating a new one before processing
     foreach ($member in $members) {
         Write-Output " - $($member.DisplayName) <$(($member.PrimarySmtpAddress))>"
         $distributionGroupMembers += [PSCustomObject]@{

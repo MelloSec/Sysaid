@@ -14,7 +14,7 @@ try {
         Write-Output "PowerShell 7 installed! Lock and load."
     }
 } catch {
-    # Store and Display Help Message @rray
+    # Store and Display Help Message @rr@y
     $seven = @"
 To install PowerShell 7 on Windows, follow these steps:
 1. Visit the GitHub releases page for PowerShell: https://github.com/PowerShell/PowerShell/releases

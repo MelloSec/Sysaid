@@ -14,6 +14,7 @@ try {
         Write-Output "PowerShell 7 installed! Lock and load."
     }
 } catch {
+    # Store and Display Help Message @rray
     $seven = @"
 To install PowerShell 7 on Windows, follow these steps:
 1. Visit the GitHub releases page for PowerShell: https://github.com/PowerShell/PowerShell/releases
@@ -25,7 +26,8 @@ Once installed, you can launch PowerShell 7 using the 'pwsh' command.
     Write-Output $seven
 }
 
-# Enforce PowerShell 7 - Check if the script is running in PowerShell 7 or higher, throw a custom error and break back to the terminal
+# Enforce PowerShell 7 - Check if the script is running in PowerShell 7 or higher, else, throw a custom error and break back to the terminal.
+# Helpful so you dont waste time trying to debug the version, it gives you what  you need to fix the error and ensures we cannot continue without the right tool
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Host "This script requires PowerShell 7+. Please install then use 'pwsh .\Get-CombinedGroupMembers.ps1'" -ForegroundColor Darkyellow
     throw "This script requires PowerShell 7 or higher. Please upgrade to continue."
@@ -33,10 +35,10 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Output "Running in PowerShell 7 or higher. Proceeding..."
 }
 
-# Store all the modules imported in memory so we can search them and match on what we want to ensure is imported
+# Store all the modules imported in memory so we can search them and match on the one we want (ExchangeOnline)
 $module = Get-Module -Name $moduleName -ListAvailable
 
-# Check if the Exchange Online Management module is installed, attempt to unstall missing module. Customize the 'else' block if you re-use.
+# Check if the Exchange Online Management module is installed, else attempt to install missing module. Customize the 'else' block if you re-use.
 if ($module) {
     # Module is installed, now check if it's imported
     if (-not (Get-Module -Name $moduleName)) {
@@ -60,18 +62,18 @@ Connect-ExchangeOnline -Device
 
 # 3. Main Logic / Building Reports
 
-# Store All Groups as a variable and create an empty array for our PowerShell CustomObject (everything is an object, so we can create our own type) so we have somewhere to put all the group member objects
+# Store All Groups as a variable and create an empty array for our PowerShell PSCustomObject (everything is an object, so we can create our own type) so we have somewhere to put all the group member objects
 $distributionGroups = Get-DistributionGroup
 $distributionGroupMembers = @()
 
-# DistributionGroups - Pull the name and address as a PSObject, a special data type we customize to have the properties we want and not all the data returned by Cmdlet
-# This part is similar to what you used when using PowerShellRemoting to get the groups before
+# DistributionGroups - Pull the name and address as a PSObject, a special data type we customize to have the properties we want store them without the extra data returned by Cmdlet
+# This part is similar to what you used in the old version to get the group memberships, we'll build the CSV from the PSCustomObject's properties later.
 foreach ($group in $distributionGroups) {
     Write-Output "Processing group: $($group.Name)"
     $members = Get-DistributionGroupMember -Identity $group.Identity | Select DisplayName, PrimarySmtpAddress
     
-    # Loop through the members and append them with the desired properties only. 
-    # PSCUstomObjects are also a good way to speed up performance on processing 'big' objects via filtering out useless properties of one object and creating a new one before processing
+    # Loop through the members and append them to the PSCustomObject with the desired properties only. 
+    # PSCUstomObjects are a good way to speed up performance on processing 'big' objects via filtering out useless properties of one object and creating a new one before processing
     foreach ($member in $members) {
         Write-Output " - $($member.DisplayName) <$(($member.PrimarySmtpAddress))>"
         $distributionGroupMembers += [PSCustomObject]@{

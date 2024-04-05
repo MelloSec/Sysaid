@@ -57,12 +57,12 @@ if ($module) {
 Write-Output "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions below to authenticate."
 Connect-ExchangeOnline -Device
 
-# 3. Logic for Building Reports
+# 3. Main Logic / Building Reports
 # Store All Groups as a variable and create an empty array for our PowerShell CustomObject (everything is an object, so we can create our own type) so we have somewhere to put all the group member objects
 $distributionGroups = Get-DistributionGroup
 $distributionGroupMembers = @()
 
-# DistributionGroups - Pull the name and address as a PSObject, a special data type we customize to have the properties we want and not all the data 
+# DistributionGroups - Pull the name and address as a PSObject, a special data type we customize to have the properties we want and not all the data returned by Cmdlet
 # This part is similar to what you used when using PowerShellRemoting to get the groups before
 foreach ($group in $distributionGroups) {
     Write-Output "Processing group: $($group.Name)"
@@ -80,9 +80,10 @@ foreach ($group in $distributionGroups) {
     }
 }
 
-# Write the in-memory array of objects to our CSV file plainly
+# 4. Write the in-memory array of objects to our CSV file plainly
+# Creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
 $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
-Write-Output "Exported Distribution Group Members to Distribution-GroupMembership.csv"
+Write-Host "Exported Distribution Group Members to Distribution-GroupMembership.csv" -ForegroundColor Darkyellow
 
 # UnifiedGroups - Do the exact same thing with slightly different properties to match the unified group's format, note 'DisplayName' twice instead of 'Name'
 $unifiedGroups = Get-UnifiedGroup
@@ -101,12 +102,16 @@ foreach ($group in $unifiedGroups) {
     }
 }
 
-# Finally, this creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
 $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
-Write-Output "Exported Unified Group Members to Unified-GroupMembership.csv"
+Write-Host "Exported Unified Group Members to Unified-GroupMembership.csv" -ForegroundColor Darkyellow
 
-# Let One Know
-Write-Output "Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'"
+# 5. Close Session and Disconnect
+# If you use Write-Host instead of Output, you can specify different colors to customize your output on the terminal
+Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor DarkBlue
+Disconnect-ExchangeOnline -Confirm $true
+
+# Use a BackgroundColor with ForegroundColor for a calming closer
+Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor DarkYellow -BackgroundColor DarkBlue
 
 
 

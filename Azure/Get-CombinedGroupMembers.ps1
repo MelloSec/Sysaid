@@ -63,9 +63,14 @@ if ($module) {
 
 # 2. Authentication/Device Code Login - Requires PowerShell 7 Module
 
-# This way works on headless systems, you verify your identity with a code in the browser on any other device that's signed in
-Write-Host "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions below to authenticate." -ForegroundColor DarkBlue
-Connect-ExchangeOnline -Device
+# Trick to check if You're already Signed in by checking if we get Output from an Exchange Cmdlet
+# Use the device code - This way works on headless systems, you verify your identity with a code in the browser on any other device that's signed in
+if (Get-Command Get-Mailbox -ErrorAction SilentlyContinue) {
+    Write-Host "Connected to Exchange Online."
+} else {
+    Write-Host "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions and use the code below below to authenticate." -ForegroundColor DarkBlue
+    Connect-ExchangeOnline -Device
+}
 
 # 3. Main Logic / Building Reports
 

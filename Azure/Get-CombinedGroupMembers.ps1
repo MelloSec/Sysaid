@@ -80,7 +80,7 @@ foreach ($group in $distributionGroups) {
 $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
 Write-Output "Exported Distribution Group Members to Distribution-GroupMembership.csv"
 
-# UnifiedGroups - Do the exact same thing with slightly different properties to match unified groups, note 'DisplayName' twice instead of 'Name'
+# UnifiedGroups - Do the exact same thing with slightly different properties to match the unified group's format, note 'DisplayName' twice instead of 'Name'
 $unifiedGroups = Get-UnifiedGroup
 $unifiedGroupMembers = @()
 

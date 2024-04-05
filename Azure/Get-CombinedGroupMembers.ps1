@@ -1,4 +1,4 @@
-# Collects and exports all members of both Unified Groups and Distribution Groups to CSV Files for da bosses
+# Collects and exports all members of both Unified Groups and Distribution Groups to CSV Files for da bosses.
 # Requires PowerShell 7+ (pwsh.exe) and ExchangeOnline V3+ (but it still beats the graph module)
 # From cmd.exe/powershell.exe terminal enter the scripts location and run 'pwsh .\Get-CombinedGroupMembers.ps1'  
 
@@ -62,6 +62,7 @@ $distributionGroups = Get-DistributionGroup
 $distributionGroupMembers = @()
 
 # DistributionGroups - Pull the name and address as a PSObject, a special data type we customize to have the properties we want and not all the data 
+# This part is similar to what you used when using PowerShellRemoting to get the groups before
 foreach ($group in $distributionGroups) {
     Write-Output "Processing group: $($group.Name)"
     $members = Get-DistributionGroupMember -Identity $group.Identity | Select DisplayName, PrimarySmtpAddress
@@ -79,7 +80,7 @@ foreach ($group in $distributionGroups) {
 $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
 Write-Output "Exported Distribution Group Members to Distribution-GroupMembership.csv"
 
-# UnifiedGroups - Do the exact same thing with different properties to match unified groups, note 'DisplayName' twice instead of 'Name'
+# UnifiedGroups - Do the exact same thing with slightly different properties to match unified groups, note 'DisplayName' twice instead of 'Name'
 $unifiedGroups = Get-UnifiedGroup
 $unifiedGroupMembers = @()
 
@@ -96,9 +97,11 @@ foreach ($group in $unifiedGroups) {
     }
 }
 
+# Finally, this creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
 $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
 Write-Output "Exported Unified Group Members to Unified-GroupMembership.csv"
 
+# Let One Know
 Write-Output "Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'"
 
 

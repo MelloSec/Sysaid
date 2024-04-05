@@ -7,32 +7,39 @@
 # Define the module name, can change this for other Modules
 $moduleName = "ExchangeOnlineManagement"
 
-# Check if 'pwsh' is installed and on PATH, ifnot, print a help message with link to install
-try {
-    $output = pwsh -Command "$PSVersionTable.PSVersion"
-    if ($output) {
-        Write-Output "PowerShell 7 installed! Lock and load."
-    }
-} catch {
-    # Store and Display Help Message @rr@y
-    $seven = @"
+# Define Help Message
+$seven = @"
 To install PowerShell 7 on Windows, follow these steps:
 1. Visit the GitHub releases page for PowerShell: https://github.com/PowerShell/PowerShell/releases
 2. Download the latest stable release for Windows.
 3. Run the installer and follow the instructions.
 Once installed, you can launch PowerShell 7 using the 'pwsh' command.
 "@
-    Write-Output "Please install PowerShell 7 then use 'pwsh .\Get-CombinedGroupMemberss.ps1'"
-    Write-Output $seven
+
+# Check if 'pwsh' is installed and on PATH, ifnot, print a help message with link to install
+try {
+    $Host = pwsh -Command "$PSVersionTable.PSVersion"
+    if ($Host) {
+        Write-Host "PowerShell 7 installed! Lock and load." -ForegroundColor DarkYellow -BackgroundColor DarkBlue
+    }
+} catch {
+    # Store and Display Help Message @rr@y
+    Write-Host "Please install PowerShell 7 then use 'pwsh .\Get-CombinedGroupMemberss.ps1'"  -ForegroundColor DarkYellow
+    Write-Host ""
+    Write-Host $seven -ForegroundColor DarkYellow
 }
 
 # Enforce PowerShell 7 - Check if the script is running in PowerShell 7 or higher, else, throw a custom error and break back to the terminal.
 # Helpful so you dont waste time trying to debug the version, it gives you what  you need to fix the error and ensures we cannot continue without the right tool
 if ($PSVersionTable.PSVersion.Major -lt 7) {
-    Write-Host "This script requires PowerShell 7+. Please install then use 'pwsh .\Get-CombinedGroupMembers.ps1'" -ForegroundColor Darkyellow
-    throw "This script requires PowerShell 7 or higher. Please upgrade to continue."
+    # Blank Write for Spacing of Output
+    Write-Host ""
+     throw "This script requires PowerShell 7 or higher. Please upgrade to continue." 
+    # break
+    # exit
+    
 } else {
-    Write-Output "Running in PowerShell 7 or higher. Proceeding..."
+    Write-Host "Running in PowerShell 7 or higher. Proceeding..."
 }
 
 # Store all the modules imported in memory so we can search them and match on the one we want (ExchangeOnline)
@@ -43,9 +50,9 @@ if ($module) {
     # Module is installed, now check if it's imported
     if (-not (Get-Module -Name $moduleName)) {
         Import-Module $moduleName -Force
-        Write-Host "$moduleName imported successfully."
+        Write-Host "$moduleName imported successfully." -ForegroundColor DarkYellow
     } else {
-        Write-Host "$moduleName is already imported."
+        Write-Host "$moduleName is already imported." -ForegroundColor DarkYellow
     }
 } else {
     # Change This if you Change the Module
@@ -57,7 +64,7 @@ if ($module) {
 # 2. Authentication/Device Code Login - Requires PowerShell 7 Module
 
 # This way works on headless systems, you verify your identity with a code in the browser on any other device that's signed in
-Write-Output "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions below to authenticate."
+Write-Host "Connecting to Exchange Online using OAuth Device Code Flow. Follow the instructions below to authenticate." -ForegroundColor DarkBlue
 Connect-ExchangeOnline -Device
 
 # 3. Main Logic / Building Reports
@@ -69,13 +76,13 @@ $distributionGroupMembers = @()
 # DistributionGroups - Pull the name and address as a PSObject, a special data type we customize to have the properties we want store them without the extra data returned by Cmdlet
 # This part is similar to what you used in the old version to get the group memberships, we'll build the CSV from the PSCustomObject's properties later.
 foreach ($group in $distributionGroups) {
-    Write-Output "Processing group: $($group.Name)"
+    Write-Host "Processing group: $($group.Name)" -ForegroundColor DarkYellow
     $members = Get-DistributionGroupMember -Identity $group.Identity | Select DisplayName, PrimarySmtpAddress
     
     # Loop through the members and append them to the PSCustomObject with the desired properties only. 
     # PSCUstomObjects are a good way to speed up performance on processing 'big' objects via filtering out useless properties of one object and creating a new one before processing
     foreach ($member in $members) {
-        Write-Output " - $($member.DisplayName) <$(($member.PrimarySmtpAddress))>"
+        Write-Host " - $($member.DisplayName) <$(($member.PrimarySmtpAddress))>" -ForegroundColor DarkYellow
         $distributionGroupMembers += [PSCustomObject]@{
             "Group Name" = $group.Name
             "Member Name" = $member.DisplayName
@@ -95,10 +102,10 @@ $unifiedGroups = Get-UnifiedGroup
 $unifiedGroupMembers = @()
 
 foreach ($group in $unifiedGroups) {
-    Write-Output "Processing unified group: $($group.DisplayName)"
+    Write-Host "Processing unified group: $($group.DisplayName)"
     $members = Get-UnifiedGroupLinks -Identity $group.Identity -LinkType Members | Select DisplayName, PrimarySmtpAddress
     foreach ($member in $members) {
-        Write-Output " - $($member.DisplayName) <$(($member.PrimarySmtpAddress))>"
+        Write-Host " - $($member.DisplayName) <$(($member.PrimarySmtpAddress))>"
         $unifiedGroupMembers += [PSCustomObject]@{
             "Group Name" = $group.DisplayName
             "Member Name" = $member.DisplayName
@@ -112,9 +119,9 @@ Write-Host "Exported Unified Group Members to Unified-GroupMembership.csv" -Fore
 
 # 4. Close Session and Disconnect
 
-# If you use Write-Host instead of Output, you can specify different colors to customize your output on the terminal
+# If you use Write-Host instead of Host, you can specify different colors to customize your Host on the terminal
 Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor DarkBlue
-Disconnect-ExchangeOnline -Confirm $true
+Disconnect-ExchangeOnline -Confirm:$false
 
 # Use a BackgroundColor with ForegroundColor for a calming closer
 Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor DarkYellow -BackgroundColor DarkBlue

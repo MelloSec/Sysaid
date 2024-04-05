@@ -1,4 +1,6 @@
-# Collects and exports all members of both Unified Groups and Distribution Groups to CSV Files for reporting
+# Collects and exports all members of both Unified Groups and Distribution Groups to CSV Files for da bosses
+# Requires PowerShell 7+ (pwsh.exe) and ExchangeOnline V3+ (but it still beats the graph module)
+# From cmd.exe/powershell.exe terminal enter the scripts location and run 'pwsh .\Get-CombinedGroupMembers.ps1'  
 
 # 1. House-Keeping Section
 # Define the module name, can change this for other Modules

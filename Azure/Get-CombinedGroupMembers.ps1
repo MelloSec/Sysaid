@@ -84,7 +84,7 @@ foreach ($group in $distributionGroups) {
     }
 }
 
-# 4. Write the in-memory array of objects to our CSV file plainly
+# Write the in-memory array of objects to our CSV file plainly
 
 # Creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
 $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
@@ -110,7 +110,7 @@ foreach ($group in $unifiedGroups) {
 $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
 Write-Host "Exported Unified Group Members to Unified-GroupMembership.csv" -ForegroundColor Darkyellow
 
-# 5. Close Session and Disconnect
+# 4. Close Session and Disconnect
 
 # If you use Write-Host instead of Output, you can specify different colors to customize your output on the terminal
 Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor DarkBlue

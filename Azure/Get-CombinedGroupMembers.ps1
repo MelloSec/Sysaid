@@ -20,11 +20,11 @@ Once installed, you can launch PowerShell 7 using the 'pwsh' command.
 try {
     $Host = pwsh -Command "$PSVersionTable.PSVersion"
     if ($Host) {
-        Write-Host "PowerShell 7 installed! Lock and load." -ForegroundColor DarkYellow -BackgroundColor DarkBlue
+        Write-Host "PowerShell 7 installed! Lock and load." -ForegroundColor Black -BackgroundColor DarkBlue
     }
 } catch {
     # Store and Display Help Message @rr@y
-    Write-Host "Please install PowerShell 7 then use 'pwsh .\Get-CombinedGroupMemberss.ps1'"  -ForegroundColor DarkYellow
+    Write-Host "Please install PowerShell 7 then use 'pwsh .\Get-CombinedGroupMemberss.ps1'"  -ForegroundColor Black -BackgroundColor DarkBlue
     Write-Host ""
     Write-Host $seven -ForegroundColor DarkYellow
 }
@@ -129,7 +129,7 @@ Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor
 Disconnect-ExchangeOnline -Confirm:$false
 
 # Use a BackgroundColor with ForegroundColor for a calming closer
-Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor DarkYellow -BackgroundColor DarkBlue
+Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor Black -BackgroundColor DarkBlue
 
 
 

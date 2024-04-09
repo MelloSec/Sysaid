@@ -18,7 +18,6 @@ $authResponse = Invoke-RestMethod `
     -Body $body
 $authResponse
 
-
 # Wait so we can browse to https://microsoft.com/devicelogin and use the device_code
 Read-Host  "Once you have completed the device code flow, press enter to continue"
 
@@ -34,7 +33,6 @@ $Tokens = Invoke-RestMethod `
     -Uri "https://login.microsoftonline.com/Common/oauth2/token?api-version=1.0" `
     -Headers $Headers `
     -Body $body
-$Tokens
 
 # Store the access token in a variable for easy use
 $accessToken = $Tokens.access_token
@@ -53,7 +51,7 @@ $unifiedGroups = $groupsResponse.value
 $unifiedGroupMembers = @()
 
 foreach ($group in $unifiedGroups) {
-    Write-Host "Processing unified group: $($group.displayName)" -ForeGroundColor DarkBlue
+    Write-Host "Processing unified group: $($group.displayName)" -ForeGroundColor Yellow
     
     # Step 2: Iterate through each Unified Group to get its members
     $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members"
@@ -64,7 +62,7 @@ foreach ($group in $unifiedGroups) {
         # Some members might not have a primary SMTP address directly accessible
         # This part assumes member type as user for simplification
         if ($member.mail -ne $null) {
-            Write-Host " - $($member.displayName) <$(($member.mail))>" -ForeGroundColor DarkYellow
+            Write-Host  -ForeGroundColor DarkYellow " - $($member.displayName) <$(($member.mail))>"
             $unifiedGroupMembers += [PSCustomObject]@{
                 "Group Name" = $group.displayName
                 "Member Name" = $member.displayName
@@ -125,7 +123,7 @@ $groupMembersInfo = @()
 foreach ($group in $allGroups) {
     # Check if the group is a distribution group
     if ($group.mailEnabled -eq $true -and $group.securityEnabled -eq $false) {
-        Write-Host "Processing distribution group: $($group.displayName)" -ForeGroundColor DarkYellow
+        Write-Host "Processing distribution group: $($group.displayName)" -ForeGroundColor Yellow
         
         # List members of the distribution group
         $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members"
@@ -148,7 +146,6 @@ foreach ($group in $allGroups) {
 $groupMembersInfo | Export-Csv -Path "DistributionGroupMemberships.csv" -NoTypeInformation
 
 # Use a BackgroundColor with ForegroundColor for a calming closer
-Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor Black -BackgroundColor DarkBlue
-
+Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor Black -BackgroundColor Yellow
 
 

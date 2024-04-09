@@ -106,8 +106,7 @@ $refreshResponse = Invoke-RestMethod -Uri $tokenUrl -Method Post -Body $body -He
 # Access the new access token from the response
 $newAccessToken = $refreshResponse.access_token
 
-# Assuming $accessToken holds a valid token
-
+# Assume we have a valid token and create new headers with new token
 $headers = @{
     Authorization = "Bearer $newAccessToken"
     "Content-Type" = "application/json"

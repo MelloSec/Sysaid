@@ -45,15 +45,6 @@ $headers = @{
     "Content-Type" = "application/json"
 }
 
-# # Graph API endpoint to retrieve Unified Groups
-# $uri = "https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c eq 'Unified')"
-
-# # Make the API call
-# $response = Invoke-RestMethod -Headers $headers -Uri $uri -Method Get
-
-# # Output the Unified Groups
-# $response.value
-
 # Retrieve all Unified Groups
 $groupsUri = "https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c eq 'Unified')"
 $groupsResponse = Invoke-RestMethod -Headers $headers -Uri $groupsUri -Method Get
@@ -83,13 +74,13 @@ foreach ($group in $unifiedGroups) {
     }
 }
 
-# Step 4: Export the collected data to a CSV file
+# Export the collected data to a CSV file
 $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
 
+# Refresh the Access Token as best-practice (and example)
 
-############################################## Distribution Groups from Exchange API
 # Define the required parameters
-$tenantId = "common" # Or specify your tenant ID
+$tenantId = "common" # Can use 'common' or specify your tenant ID if multi-tenant 
 $clientId = "1950a258-227b-4e31-a9cf-717495945fc2" # Client ID for public client (as used in device code flow)
 $refreshToken = $Tokens.refresh_token # Refresh token acquired from previous authentication
 $resource = "https://graph.microsoft.com" # Target resource; adjust if needed

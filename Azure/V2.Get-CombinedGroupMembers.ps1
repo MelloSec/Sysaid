@@ -65,7 +65,7 @@ foreach ($group in $unifiedGroups) {
             Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $unifiedGroupMembers += [PSCustomObject]@{
                 "Group Name" = $group.displayName
-                "Group Email" = $group.PrimarySmtpAddress
+                "Group Email" = $group.mail
                 "Member Name" = $member.displayName
                 "Member Email" = $member.mail
             }
@@ -201,7 +201,7 @@ Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor
 Disconnect-ExchangeOnline -Confirm:$false
 
 # Use a BackgroundColor with ForegroundColor for a calming closer
-Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor Blue -BackgroundColor Black
+Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor Yellow -BackgroundColor Black
 
 
 

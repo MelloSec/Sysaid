@@ -1,6 +1,6 @@
 # Combined Group Membership V2 - Graph Edition
 # The MG PowerShell module for the Graph isn't good and the script worked sometimes.
-# Direct method using Grapp and Exchange APIs
+# Direct method using Graph
 
 # Initiate the Device Code Flow 
 $body = @{

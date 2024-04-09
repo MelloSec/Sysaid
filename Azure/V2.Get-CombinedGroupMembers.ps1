@@ -164,13 +164,14 @@ if (Get-Command Get-Mailbox -ErrorAction SilentlyContinue) {
     #Connect-ExchangeOnline -Device
     Connect-ExchangeOnline -AccessToken $newAccessToken -UserPrincipalName $username
 }
-   # Collect Group Membership
-    # Store All Groups as a variable and create an empty array for our PowerShell PSCustomObject (everything is an object, so we can create our own type) so we have somewhere to put all the group member objects
-    $distributionGroups = Get-DistributionGroup
-    $distributionGroupMembers = @()
+
+# Collect Group Membership
+# Store All Groups as a variable and create an empty array for our PowerShell PSCustomObject (everything is an object, so we can create our own type) so we have somewhere to put all the group member objects
+$distributionGroups = Get-DistributionGroup
+$distributionGroupMembers = @()
     
-    # Assuming $distributionGroups contains the distribution groups you're interested in
-    foreach ($group in $distributionGroups) {
+# Assuming $distributionGroups contains the distribution groups you're interested in
+foreach ($group in $distributionGroups) {
         Write-Host -ForegroundColor Yellow "Processing group: $($group.Name) $($group.PrimarySmtpAddress)" 
         
         # Use Get-DistributionGroup to get the group's Primary SMTP Address (email address)
@@ -189,19 +190,19 @@ if (Get-Command Get-Mailbox -ErrorAction SilentlyContinue) {
         }
     }
    
-    # Example of how to output or use $distributionGroupMembers
-    # Displaying in the console
-    $distributionGroupMembers | Format-Table -AutoSize
+# Example of how to output or use $distributionGroupMembers
+# Displaying in the console
+$distributionGroupMembers | Format-Table -AutoSize
     
-    # Exporting to CSV
-    $distributionGroupMembers | Export-Csv -Path "DistributionGroupMembers.csv" -NoTypeInformation
-    # Write the in-memory array of objects to our CSV file plainly
+# Exporting to CSV
+$distributionGroupMembers | Export-Csv -Path "DistributionGroupMembers.csv" -NoTypeInformation
+# Write the in-memory array of objects to our CSV file plainly
     
-    # Creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
-    $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
-    Write-Host "Exported Distribution Group Members to Distribution-GroupMembership.csv" -ForegroundColor Darkyellow
-    Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor DarkBlue
-    Disconnect-ExchangeOnline -Confirm:$false
+# Creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
+$distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
+Write-Host "Exported Distribution Group Members to Distribution-GroupMembership.csv" -ForegroundColor Darkyellow
+Write-Host "Work complete, disconnecting from Exchange Online." -ForegroundColor DarkBlue
+Disconnect-ExchangeOnline -Confirm:$false
 
 # Use a BackgroundColor with ForegroundColor for a calming closer
 Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor Blue -BackgroundColor Black

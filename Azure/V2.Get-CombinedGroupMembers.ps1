@@ -51,7 +51,7 @@ $unifiedGroups = $groupsResponse.value
 $unifiedGroupMembers = @()
 
 foreach ($group in $unifiedGroups) {
-    Write-Host "Processing unified group: $($group.displayName)" -ForeGroundColor Yellow
+    Write-Host "Processing unified group: $($group.displayName)" -ForegroundColor Yellow
     
     # Step 2: Iterate through each Unified Group to get its members
     $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members"
@@ -62,7 +62,7 @@ foreach ($group in $unifiedGroups) {
         # Some members might not have a primary SMTP address directly accessible
         # This part assumes member type as user for simplification
         if ($member.mail -ne $null) {
-            Write-Host  -ForeGroundColor DarkYellow " - $($member.displayName) <$(($member.mail))>"
+            Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $unifiedGroupMembers += [PSCustomObject]@{
                 "Group Name" = $group.displayName
                 "Member Name" = $member.displayName
@@ -123,7 +123,7 @@ $groupMembersInfo = @()
 foreach ($group in $allGroups) {
     # Check if the group is a distribution group
     if ($group.mailEnabled -eq $true -and $group.securityEnabled -eq $false) {
-        Write-Host "Processing distribution group: $($group.displayName)" -ForeGroundColor Yellow
+        Write-Host "Processing distribution group: $($group.displayName)" -ForegroundColor Yellow
         
         # List members of the distribution group
         $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members"

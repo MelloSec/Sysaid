@@ -193,11 +193,7 @@ foreach ($group in $distributionGroups) {
 # Example of how to output or use $distributionGroupMembers
 # Displaying in the console
 $distributionGroupMembers | Format-Table -AutoSize
-    
-# Exporting to CSV
-$distributionGroupMembers | Export-Csv -Path "DistributionGroupMembers.csv" -NoTypeInformation
-# Write the in-memory array of objects to our CSV file plainly
-    
+        
 # Creates the files from the in memory objects without the data types data in the first line which only gets in the way for what we need to do 
 $distributionGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
 Write-Host "Exported Distribution Group Members to Distribution-GroupMembership.csv" -ForegroundColor Darkyellow

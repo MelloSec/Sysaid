@@ -10,7 +10,7 @@ $moduleName = "ExchangeOnlineManagement"
 # Define Help Message
 $seven = @"
 To install PowerShell 7 on Windows, follow these steps:
-1. Visit the GitHub releases page for PowerShell: https://github.com/PowerShell/PowerShell/releases
+1. Visit the MS installation page for PowerShell 7: https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4
 2. Download the latest stable release for Windows.
 3. Run the installer and follow the instructions.
 Once installed, you can launch PowerShell 7 using the 'pwsh' command.
@@ -18,8 +18,8 @@ Once installed, you can launch PowerShell 7 using the 'pwsh' command.
 
 # Check if 'pwsh' is installed and on PATH, ifnot, print a help message with link to install
 try {
-    $Host = pwsh -Command "$PSVersionTable.PSVersion"
-    if ($Host) {
+    $HVersion = pwsh -Command "$PSVersionTable.PSVersion"
+    if ($HVersion) {
         Write-Host "PowerShell 7 installed! Lock and load." -ForegroundColor Black -BackgroundColor DarkBlue
     }
 } catch {

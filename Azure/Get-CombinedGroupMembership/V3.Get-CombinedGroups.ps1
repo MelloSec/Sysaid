@@ -59,6 +59,7 @@ foreach ($group in $unifiedGroups) {
             Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $unifiedGroupMembers += [PSCustomObject]@{
                 "Group Name" = $group.displayName
+                "Group Name" = $group.mail
                 "Member Name" = $member.displayName
                 "Member Email" = $member.mail
             }
@@ -86,6 +87,7 @@ foreach ($group in $distroGroups) {
             Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $DistroGroupMembers += [PSCustomObject]@{
                 "Group Name" = $group.displayName
+                "Group Name" = $group.mail
                 "Member Name" = $member.displayName
                 "Member Email" = $member.mail
             }

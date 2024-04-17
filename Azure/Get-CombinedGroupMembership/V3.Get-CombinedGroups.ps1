@@ -101,7 +101,6 @@ $distroGroupIds = $distroGroups | Select-Object -ExpandProperty id
 $unifiedGroupIds = $unifiedGroups | Select-Object -ExpandProperty id
 $commonGroupIds = $distroGroupIds | Where-Object { $_ -in $unifiedGroupIds }
 
-# Output the results
 if ($commonGroupIds.Count -gt 0) {
     "Found common groups between Distribution and Unified types:"
     $commonGroups = $distroGroups | Where-Object { $_.id -in $commonGroupIds }

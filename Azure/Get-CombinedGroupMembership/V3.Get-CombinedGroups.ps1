@@ -3,7 +3,7 @@ $body = @{
     "client_id" =     "1950a258-227b-4e31-a9cf-717495945fc2"
     "resource" =      "https://graph.microsoft.com"
 }
-$UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
+$UserAgent = "Mellozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
 $Headers=@{}
 $Headers["User-Agent"] = $UserAgent
 $authResponse = Invoke-RestMethod `
@@ -59,7 +59,7 @@ foreach ($group in $unifiedGroups) {
             Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $unifiedGroupMembers += [PSCustomObject]@{
                 "Group Name" = $group.displayName
-                "Group Name" = $group.mail
+                "Group Email" = $group.mail
                 "Member Name" = $member.displayName
                 "Member Email" = $member.mail
             }
@@ -69,6 +69,9 @@ foreach ($group in $unifiedGroups) {
 
 # Export CSV
 $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
+
+
+# Distribution Groups
 $distroUri = "https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c eq 'Distribution')"
 $distroResponse = Invoke-RestMethod -Headers $headers -Uri $distroUri -Method Get
 $distroGroups = $distroResponse.value
@@ -87,7 +90,7 @@ foreach ($group in $distroGroups) {
             Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $DistroGroupMembers += [PSCustomObject]@{
                 "Group Name" = $group.displayName
-                "Group Name" = $group.mail
+                "Group Email" = $group.mail
                 "Member Name" = $member.displayName
                 "Member Email" = $member.mail
             }
@@ -112,3 +115,7 @@ if ($commonGroupIds.Count -gt 0) {
 } else {
     "No common groups found between Distribution and Unified types."
 }
+
+Write-Host "Number of Distribution Group IDs: $($distroGroupIds.Count)"
+Write-Host "Number of Unified Group IDs: $($unifiedGroupIds.Count)"
+Write-Host "Number of Common Group IDs: $($commonGroupIds.Count)"

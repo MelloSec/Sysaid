@@ -205,3 +205,12 @@ if ($commonGroupIds.Count -gt 0) {
 Write-Host -ForegroundColor Yellow "Number of Distribution Group IDs: $($distroGroupIds.Count)"
 Write-Host -ForegroundColor Yellow "Number of Unified Group IDs: $($unifiedGroupIds.Count)"
 Write-Host -ForegroundColor Yellow "Number of Common Group IDs: $($commonGroupIds.Count)"
+
+Disconnect-ExchangeOnline -Confirm:$false
+
+# Use a BackgroundColor with ForegroundColor for a calming closer
+Write-Host "Job Finished - Your reports are in the current directory as 'Unified-GroupMembership.csv' and 'Distribution-GroupMembership.csv'" -ForegroundColor Yellow -BackgroundColor Black
+
+
+
+

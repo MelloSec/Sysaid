@@ -101,4 +101,4 @@ foreach ($group in $distroGroups) {
 }
 
 # Export the collected data to a CSV file
-$unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
+$DistroGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation

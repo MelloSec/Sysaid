@@ -17,7 +17,7 @@ $authResponse
 # Wait so we can browse to https://microsoft.com/devicelogin and use the device_code
 Read-Host  "Once you have completed the device code flow, press enter to continue"
 
-# finally execute this command to ask for  a set of Access/Refresh tokens
+# Request a set of Tokens
 $body=@{
     "client_id" =  "1950a258-227b-4e31-a9cf-717495945fc2"
     "grant_type" = "urn:ietf:params:oauth:grant-type:device_code"
@@ -39,7 +39,7 @@ $headers = @{
     "Content-Type" = "application/json"
 }
 
-# Retrieve all Unified Groups
+# Retrieve all Unified Groups, using the groupTypes filtering on 'Unified'
 $groupsUri = "https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c eq 'Unified')"
 $groupsResponse = Invoke-RestMethod -Headers $headers -Uri $groupsUri -Method Get
 $unifiedGroups = $groupsResponse.value
@@ -49,14 +49,12 @@ $unifiedGroupMembers = @()
 foreach ($group in $unifiedGroups) {
     Write-Host "Processing unified group: $($group.displayName)" -ForegroundColor Yellow
     
-    # Step 2: Iterate through each Unified Group to get its members
+    # Iterate to get members
     $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members"
     $membersResponse = Invoke-RestMethod -Headers $headers -Uri $membersUri -Method Get
     $members = $membersResponse.value
     
     foreach ($member in $members) {
-        # Some members might not have a primary SMTP address directly accessible
-        # This part assumes member type as user for simplification
         if ($member.mail -ne $null) {
             Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $unifiedGroupMembers += [PSCustomObject]@{
@@ -68,27 +66,22 @@ foreach ($group in $unifiedGroups) {
     }
 }
 
-# Export the collected data to a CSV file
+# Export CSV
 $unifiedGroupMembers | Export-Csv -Path "Unified-GroupMembership.csv" -NoTypeInformation
-
-
 $distroUri = "https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c eq 'Distribution')"
-$distroResponse = Invoke-RestMethod -Headers $headers -Uri $groupsUri -Method Get
-$distroGroups = $groupsResponse.value
+$distroResponse = Invoke-RestMethod -Headers $headers -Uri $distroUri -Method Get
+$distroGroups = $distroResponse.value
 
 $DistroGroupMembers = @()
 
 foreach ($group in $distroGroups) {
     Write-Host "Processing Distribution group: $($group.displayName)" -ForegroundColor Yellow
-    
-    # Step 2: Iterate through each Group to get its members
+
     $membersUri = "https://graph.microsoft.com/v1.0/groups/$($group.id)/members"
     $membersResponse = Invoke-RestMethod -Headers $headers -Uri $membersUri -Method Get
     $members = $membersResponse.value
     
     foreach ($member in $members) {
-        # Some members might not have a primary SMTP address directly accessible
-        # This part assumes member type as user for simplification
         if ($member.mail -ne $null) {
             Write-Host  -ForegroundColor Yellow " - $($member.displayName) <$(($member.mail))>"
             $DistroGroupMembers += [PSCustomObject]@{
@@ -100,5 +93,21 @@ foreach ($group in $distroGroups) {
     }
 }
 
-# Export the collected data to a CSV file
+# Export CSV
 $DistroGroupMembers | Export-Csv -Path "Distribution-GroupMembership.csv" -NoTypeInformation
+
+# Compare groupIds to find the ones in common 
+$distroGroupIds = $distroGroups | Select-Object -ExpandProperty id
+$unifiedGroupIds = $unifiedGroups | Select-Object -ExpandProperty id
+$commonGroupIds = $distroGroupIds | Where-Object { $_ -in $unifiedGroupIds }
+
+# Output the results
+if ($commonGroupIds.Count -gt 0) {
+    "Found common groups between Distribution and Unified types:"
+    $commonGroups = $distroGroups | Where-Object { $_.id -in $commonGroupIds }
+    foreach ($group in $commonGroups) {
+        " - $($group.displayName) (ID: $($group.id))"
+    }
+} else {
+    "No common groups found between Distribution and Unified types."
+}

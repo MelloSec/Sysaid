@@ -22,7 +22,7 @@ namespace HealthCheck
             ILogger log)
         {
             
-            // Store full URI to target hosts list, Teams Channel Incoming Webhook (or whatever) and grab the ConnectionString
+            // Environment Variables to store full URI to target hosts list, Teams Channel Incoming Webhook (or whatever) and grab the ConnectionString - KeyVault is the better way but
             string blobUri = Environment.GetEnvironmentVariable("BlobUri");
             string webhookUrl = Environment.GetEnvironmentVariable("webhookUrl");
             string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");

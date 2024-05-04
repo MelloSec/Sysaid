@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 
-namespace biHealthCheck
+namespace HealthCheck
 {
     public static class Function1
     {

@@ -20,12 +20,18 @@ namespace biHealthCheck
             [TimerTrigger("0 0 */12 * * *")] TimerInfo myTimer,
             ILogger log)
         {
+            
+            // Store full URI to target hosts list, Teams Channel Incoming Webhook (or whatever) and grab the ConnectionString
             string blobUri = Environment.GetEnvironmentVariable("BlobUri");
             string webhookUrl = Environment.GetEnvironmentVariable("webhookUrl");
             string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+
+            // Call the Method that acts as our Blob Client and get an array of IPs/Hostnames work, too
             string[] ipAddresses = await ReadIpAddressesFromBlobAsync(blobUri, connectionString);
 
-            string imageUrl = "https://blueirissoftware.com/wp-content/uploads/2019/06/splash.jpg";
+
+            // Set Adaptive Card Image URL Here for a nice touch.... of mayhem 
+            string imageUrl = "https://i.redd.it/lprym5wfcw681.jpg";
 
             bool allOnline = true;
 
@@ -41,7 +47,7 @@ namespace biHealthCheck
                       // Change to HTTPs if needed
                       HttpResponseMessage response = await httpClient.GetAsync($"http://{ipAddress}");
 
-                      // Or Use
+                      // Or Use Conditional
                       // Try HTTPS first
                       // response = await httpClient.GetAsync($"https://{ipAddress}");
                       // if success, log and set true / else 
@@ -49,10 +55,7 @@ namespace biHealthCheck
                       // if success set bool / else         log.LogWarning($"Failed to reach IP address {ipAddress} using both HTTPS and HTTP. Retrying...");
                       // await Task.Delay(TimeSpan.FromMinutes(3));
                       // retryCount++;
-                      
-                      
-
-                      
+        
                         if (response.IsSuccessStatusCode)
                         {
                             success = true;
@@ -174,6 +177,7 @@ namespace biHealthCheck
             }
         }
 
+        // store the full URI to the hosts list in a storage container, use connectionstring, SAS or Managed ID 'Storage Account Blob Reader' on the Function App to read them in
         async static Task<string[]> ReadIpAddressesFromBlobAsync(string blobUri, string connectionString)
         {
             BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);

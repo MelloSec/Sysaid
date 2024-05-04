@@ -15,6 +15,7 @@ namespace HealthCheck
     {
         private static readonly HttpClient httpClient = new HttpClient();
 
+        // 12 Hour task Trigger, this is same way a cron job is specified, seconds, minutes, hours, days, weeks, months, years
         [FunctionName("Function1")]
         public static async Task RunTimer(
             [TimerTrigger("0 0 */12 * * *")] TimerInfo myTimer,
